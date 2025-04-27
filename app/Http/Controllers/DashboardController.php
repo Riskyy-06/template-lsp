@@ -13,11 +13,24 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        
         $jumlahTransaksi = Transaksi::count();
         $totalPendapatan = Transaksi::sum('total_harga');
         $totalStok = Produk::sum('kuantitas');
 
-        return view('dashboard', compact('jumlahTransaksi', 'totalPendapatan', 'totalStok'));
+        // Tambahan untuk grafik area chart
+        $salesData = Transaksi::selectRaw('DATE(created_at) as date, SUM(total_harga) as total')
+                    ->whereBetween('created_at', [now()->subDays(6), now()])
+                    ->groupBy('date')
+                    ->orderBy('date')
+                    ->get();
+
+        $dates = $salesData->pluck('date')->map(function($date) {
+            return \Carbon\Carbon::parse($date)->format('d M');
+        });
+        $totals = $salesData->pluck('total');
+
+        return view('dashboard', compact('jumlahTransaksi', 'totalPendapatan', 'totalStok', 'dates', 'totals'));
     }
 
     /**
