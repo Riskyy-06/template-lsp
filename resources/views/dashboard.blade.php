@@ -7,9 +7,8 @@
                 </h2>
                 <p class="text-gray-600 dark:text-gray-400">Hai, {{ Auth::user()->name }}!</p>
             </div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">
-                {{ \Carbon\Carbon::now()->format('d M Y, H:i') }}
-            </div>
+            <span id="current-time" class="text-sm text-gray-600"></span>
+
         </div>
     </x-slot>
 
@@ -98,4 +97,21 @@
     var chart = new ApexCharts(document.querySelector("#salesChart"), options);
     chart.render();
 </script>
+
+<script>
+    function updateTime() {
+        const now = new Date();
+        const options = { 
+            day: '2-digit', month: 'short', year: 'numeric', 
+            hour: '2-digit', minute: '2-digit',
+            hour12: false 
+        };
+        const formatted = now.toLocaleString('id-ID', options);
+        document.getElementById('current-time').textContent = formatted;
+    }
+
+    updateTime(); // Panggil saat halaman dibuka
+    setInterval(updateTime, 60000); // Update setiap 1 menit
+</script>
+
 </x-app-layout>
