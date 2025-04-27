@@ -10,9 +10,6 @@ use Illuminate\Http\Request;
 
 class KeranjangController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $items = ItemKeranjang::with('produk')->get()->map(function ($item) {
@@ -57,9 +54,6 @@ class KeranjangController extends Controller
         return redirect()->route('transaksi.show', $transaksi)->with('success', 'Transaksi berhasil dilakukan.');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $produks = Produk::all(['id', 'nama_produk', 'kuantitas'])->map(function ($produk) {
@@ -73,9 +67,6 @@ class KeranjangController extends Controller
         return view('keranjang.create', compact('produks'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -89,10 +80,6 @@ class KeranjangController extends Controller
                     return $fail('Jumlah produk melebihi stok yang tersedia.');
                 }
             }],
-        ], [
-            'nama_produk.required' => 'Nama produk harus diisi.',
-            'jumlah.required' => 'Jumlah produk harus diisi.',
-            'jumlah.min' => 'Jumlah produk tidak boleh kurang dari 1.',
         ]);
 
         $item = ItemKeranjang::where('produk_id', $validated['produk_id'])->first();
@@ -106,9 +93,6 @@ class KeranjangController extends Controller
         return redirect()->route('keranjang.index')->with('success', 'Produk berhasil dimasukkan.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(ItemKeranjang $item)
     {
         $item->delete();
